@@ -1,16 +1,21 @@
 import { useState } from 'react'
 import './App.css'
-import Home from './page/Home';
-import Signup from './page/Signup';
-import Login from './page/Login';
+import Signup from './components/Signup/Signup'
+import Login from './components/Login';
+import Home from './components/Home';
 import { BrowserRouter as Router} from 'react-router-dom';
 import {Routes, Route} from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 function App() {
 
   return (
     <Router>
       <div>
-        <section>                              
+      <Toaster
+  position="top-right"
+  reverseOrder={false}
+/>
+        <section className="w-full h-full bg-gray-50 dark:bg-gray-900">                              
             <Routes>                                                                        
               <Route path="/" element={<Home/>}/>
               <Route path="/signup" element={<Signup/>}/>
