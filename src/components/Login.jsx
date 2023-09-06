@@ -1,14 +1,59 @@
 import React,{useState} from 'react';
-import { NavLink } from 'react-router-dom';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { NavLink,useNavigate } from 'react-router-dom';
+import { getAuth, signInWithPopup, GoogleAuthProvider,signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from '../firebase';
-
+import { toast } from 'react-hot-toast';
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const provider = new GoogleAuthProvider();
+    const navigate = useNavigate()
+    const handleLogin = async(e)=>
+    {
+      e.preventDefault()
+      toast("Logging you in", {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    toast.success("Logged in successfully", {
+      style: {
+        borderRadius: "7px",
+        background: "#333",
+        color: "#fff",
+      },
+    });
+    navigate("/")
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    console.log(errorCode);
+    toast.error(`Error logging in, ${errorCode}`, {
+      style: {
+        borderRadius: "7px",
+        background: "#333",
+        color: "#fff",
+      },
+    });
+  });
+    }
     const handleSignInWithGoogle = async()=>
     {
+      toast("Logging you in", {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
       signInWithPopup(auth, provider)
   .then((result) => {
     // This gives you a Google Access Token. You can use it to access the Google API.
@@ -17,16 +62,32 @@ const Login = () => {
     // The signed-in user info.
     const user = result.user;
     console.log(user);
+    toast.success("Logged in successfully", {
+      style: {
+        borderRadius: "7px",
+        background: "#333",
+        color: "#fff",
+      },
+    });
+    navigate("/")
     // IdP data available using getAdditionalUserInfo(result)
     // ...
   }).catch((error) => {
     // Handle Errors here.
     const errorCode = error.code;
     const errorMessage = error.message;
+    
     // The email of the user's account used.
     const email = error.customData.email;
     // The AuthCredential type that was used.
     const credential = GoogleAuthProvider.credentialFromError(error);
+    toast.error(`Error logging in, ${errorCode}`, {
+      style: {
+        borderRadius: "7px",
+        background: "#333",
+        color: "#fff",
+      },
+    });
     // ...
   });
     }
@@ -55,7 +116,7 @@ const Login = () => {
                   <p className='text-lgfont-light text-gray-500 dark:text-gray-400'>or</p>
                   <div className="bg-gray-600 ml-2" style={{height:"2px",width:"100%"}}></div>
                 </div>
-                <form className="space-y-4 md:space-y-6" action="#">
+                <form className="space-y-4 md:space-y-6" onSubmit={handleLogin}>
                   
                   <div>
                     <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>

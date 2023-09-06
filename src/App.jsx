@@ -15,7 +15,7 @@ function App() {
   position="top-right"
   reverseOrder={false}
 />
-        <section className="w-full h-full bg-gray-50 dark:bg-gray-900">                              
+        <section className="w-full h-full bg-gray-50 dark:bg-gray-900" style={{width:"100vw",height:'100vh'}}>                              
             <Routes>                                                                        
               <Route path="/" element={<Home/>}/>
               <Route path="/signup" element={<Signup/>}/>
