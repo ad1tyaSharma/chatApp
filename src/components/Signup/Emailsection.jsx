@@ -1,10 +1,81 @@
 import React,{useState} from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink,useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 const Emailsection = ({email,password,confPassword,setEmail,setPassword,setConfPassword,step,setStep}) => {
-  const handleSubmit = (e)=>{
-  e.preventDefault()
-  setStep(step+1)
+  const navigate = useNavigate()
+  function isEmailValid(email) {
+    // Regular expression for a basic email pattern
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailPattern.test(email);
   }
+function isPasswordValid(password) {
+    // Check for minimum length (e.g., 8 characters)
+    if (password.length < 8) {
+      return false;
+    }
+  
+    // Check for at least one uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      return false;
+    }
+  
+    // Check for at least one lowercase letter
+    if (!/[a-z]/.test(password)) {
+      return false;
+    }
+  
+    // Check for at least one digit
+    if (!/\d/.test(password)) {
+      return false;
+    }
+  
+    // Check for at least one special character (e.g., @, #, $, etc.)
+    if (!/[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password)) {
+      return false;
+    }
+  
+    // Password meets all criteria
+    return true;
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isEmailValid(email)) {
+      toast.error("Invalid Email", {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+    if (!isPasswordValid(password)) {
+      toast.error("Invalid Password", {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+    if (confPassword != password) {
+      toast.error("Passwords doesn't match", {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+    console.log({
+      email,
+      password,
+      confPassword,
+    });
+    setStep(step + 1);
+  };
     return (
         
     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -12,19 +83,7 @@ const Emailsection = ({email,password,confPassword,setEmail,setPassword,setConfP
       <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
         Create your Free Account
       </h1>
-      <div className="m-2">
-        <button type="button" className="w-full flex justify-center items-center text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2">
-          <svg className="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 19">
-            <path fillRule="evenodd" d="M8.842 18.083a8.8 8.8 0 0 1-8.65-8.948 8.841 8.841 0 0 1 8.8-8.652h.153a8.464 8.464 0 0 1 5.7 2.257l-2.193 2.038A5.27 5.27 0 0 0 9.09 3.4a5.882 5.882 0 0 0-.2 11.76h.124a5.091 5.091 0 0 0 5.248-4.057L14.3 11H9V8h8.34c.066.543.095 1.09.088 1.636-.086 5.053-3.463 8.449-8.4 8.449l-.186-.002Z" clipRule="evenodd" />
-          </svg>
-          Sign up with Google
-        </button>
-      </div>
-      <div className="m-2 w-full flex justify-between items-center">
-        <div className="bg-gray-600 mr-2" style={{height:"2px",width:"100%"}}></div>
-        <p className='text-lgfont-light text-gray-500 dark:text-gray-400'>or</p>
-        <div className="bg-gray-600 ml-2" style={{height:"2px",width:"100%"}}></div>
-      </div>
+     
       <form className="space-y-4 md:space-y-6"  onSubmit={handleSubmit}>
         
         <div>

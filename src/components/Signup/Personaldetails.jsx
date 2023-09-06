@@ -1,8 +1,41 @@
 import React from 'react';
-
-const Personaldetails = ({phone,name,username,setPhone,setUsername,setName,step,setStep}) => {
-    const handleSubmit = (e)=>{
-        e.preventDefault()
+import { toast } from 'react-hot-toast';
+const Personaldetails = ({phone,name,setPhone,setName,step,setStep}) => {
+  function isPhoneNumberValid(phoneNumber) {
+    // Remove all non-numeric characters from the input
+    const numericPhoneNumber = phoneNumber.replace(/\D/g, '');
+  
+    // Check if the cleaned phone number matches the North American format
+    const phoneNumberPattern = /^(1)?(\d{10})$/;
+    
+    return phoneNumberPattern.test(numericPhoneNumber);
+  }  
+  const handleSubmit = (e)=>{
+        e.preventDefault();
+        if(!name || name.length <3)
+        {
+          toast.error("Invalid Name", {
+            style: {
+              borderRadius: "7px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+          return;
+        }
+        if(!isPhoneNumberValid(phone))
+        {
+          toast.error("Invalid Phone Number", {
+            style: {
+              borderRadius: "7px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+          return;
+        }
+        console.log({phone,
+          name});
         setStep(step+1)
         }
     return (
@@ -15,18 +48,16 @@ const Personaldetails = ({phone,name,username,setPhone,setUsername,setName,step,
       
       <form className="space-y-4 md:space-y-6"  onSubmit={handleSubmit}>
         
-        <div>
-          <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Username</label>
-          <input value={username} onChange={e=>setUsername(e.target.value)} type="text" name="username" id="username" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="" required="" />
-        </div>
-        <div>
-          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+      <div>
+          <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Name</label>
           <input value={name} onChange={e=>setName(e.target.value)} type="text" name="name" id="password" placeholder="" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="" />
         </div>
         <div>
-          <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm password</label>
+          <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone Number</label>
           <input value={phone} onChange={e=>setPhone(e.target.value)} type="number" name="phone" id="phone" placeholder="" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="" />
         </div>
+        
+        
         {/* <div>
             <p className="text-xs font-light text-gray-500 dark:text-gray-400">Password must be 8 characters long</p>
             <p className="text-xs font-light text-gray-500 dark:text-gray-400">Password must have atleast one uppercase, one lowercase, one number and one special character.</p>
