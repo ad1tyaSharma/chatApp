@@ -1,11 +1,16 @@
 import React, {useState} from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { auth } from '../../firebase';
+import { auth,db } from '../../firebase';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Emailsection from './Emailsection';
 import Personaldetails from './Personaldetails';
 import Profilepicture from './Profilepicture';
 import { toast } from 'react-hot-toast';
+import firebase from "firebase/compat/app";
+// Required for side-effects
+import "firebase/firestore";
+import { collection, setDoc ,doc} from "firebase/firestore"; 
+
 const Signup = () => {
   const navigate = useNavigate()
     const [email, setEmail] = useState("");
@@ -18,10 +23,32 @@ const Signup = () => {
     const handleSignup=async()=>
     {
       createUserWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
+  .then(async(userCredential) => {
     // Signed in 
     const user = userCredential.user;
     console.log(user);
+    try {
+      await setDoc(doc(db,"users",`${user.uid}`),{
+        name ,
+        email,
+        phoneNumber :phone,
+        photoURL :profileImage,
+        isProfilePublic : true,
+        status : 'idle',
+        channels : [],
+        friends: [],
+        about:""
+      })
+     } catch (error) {
+       console.error(error);
+       toast.error(`Error creating new account`, {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+     }
     toast.success("Account created", {
       style: {
         borderRadius: "7px",
@@ -29,7 +56,7 @@ const Signup = () => {
         color: "#fff",
       },
     });
-      navigate('/login')
+     
     // ...
   })
   .catch((error) => {
@@ -45,7 +72,7 @@ const Signup = () => {
     });
     // ..
   });
-     
+      navigate('/login')
     }
     return (
   <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">

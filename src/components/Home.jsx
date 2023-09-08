@@ -3,9 +3,12 @@ import { getAuth, onAuthStateChanged,signOut } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase';
 import { toast } from 'react-hot-toast';
+import Sidebar from './Home/Sidebar';
+import Middlesection from './Home/Middlesection';
 const Home = () => {
     const navigate = useNavigate()
     const [user, setUser] = useState("");
+    const [menu, setMenu] = useState(2);
     const handleSignout = async()=>
     {
         toast("Logging you out", {
@@ -41,11 +44,8 @@ const Home = () => {
        
     }, []);
     return (
-        <div>
-            {
-                user ? user.email : null
-            }
-            yi
+        <div className='lg:flex'>
+          <Sidebar menu={menu} setMenu={setMenu}></Sidebar>
         </div>
     );
 }
