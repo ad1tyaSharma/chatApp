@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../firebase';
 import { toast } from 'react-hot-toast';
 import Sidebar from './Home/Sidebar';
-import Middlesection from './Home/Middlesection';
+import Profile from './Home/Profile';
 const Home = () => {
     const navigate = useNavigate()
     const [user, setUser] = useState("");
@@ -46,6 +46,9 @@ const Home = () => {
     return (
         <div className='lg:flex'>
           <Sidebar menu={menu} setMenu={setMenu}></Sidebar>
+          {
+            menu == 1 ? <Profile self={user.uid} user={user.uid}></Profile> : <></>
+          }
         </div>
     );
 }
