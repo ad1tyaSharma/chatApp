@@ -80,6 +80,8 @@ const Login = () => {
               channels: [],
               friends: [],
               about: "",
+              invitations:[],
+              username: ""
             });
           }
         } catch (error) {

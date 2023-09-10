@@ -5,6 +5,7 @@ import { db } from "../../firebase";
 import {getDoc, doc } from "firebase/firestore";
 import { toast } from 'react-hot-toast';
 const Profile = ({user,self}) => {
+    const [userData, setUserData] = useState(null);
     const getUserData = ()=>
     {
         getDoc(doc(db, "users", `${user}`)).then((result) => {
@@ -23,7 +24,7 @@ const Profile = ({user,self}) => {
         });
         
     }
-    const [userData, setUserData] = useState(null);
+    
     useEffect(() => {
        if(user)
        {

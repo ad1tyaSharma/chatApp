@@ -37,7 +37,9 @@ const Signup = () => {
         status : 'idle',
         channels : [],
         friends: [],
-        about:""
+        about:"",
+        invitations:[],
+        username:""
       })
      } catch (error) {
        console.error(error);
