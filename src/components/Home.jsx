@@ -5,6 +5,7 @@ import { auth } from '../firebase';
 import { toast } from 'react-hot-toast';
 import Sidebar from './Home/Sidebar';
 import Profile from './Home/Profile';
+import Contact from './Home/Contact';
 const Home = () => {
     const navigate = useNavigate()
     const [user, setUser] = useState("");
@@ -48,6 +49,9 @@ const Home = () => {
           <Sidebar menu={menu} setMenu={setMenu}></Sidebar>
           {
             menu == 1 ? <Profile self={user.uid} user={user.uid}></Profile> : <></>
+          }
+          {
+            menu == 3 ? <Contact user={user.uid}></Contact> : <></>
           }
         </div>
     );
