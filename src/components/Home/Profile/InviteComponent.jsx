@@ -96,8 +96,8 @@ const InviteComponent = ({id,user,setInvites,userData}) => {
                             <p className='m-5 text-gray-300'>{data.name}</p>
                             </div>
                             <div>
-                            <button onClick={acceptInvite} type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"><DoneIcon></DoneIcon></button>
-                                <button onClick={rejectInvite} type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"><CloseIcon></CloseIcon></button>
+                            <button onClick={acceptInvite} type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-2 mr-2 mb-2 dark:bg-gray-700 dark:hover:bg-gray-800 dark:focus:ring-gray-800"><DoneIcon></DoneIcon></button>
+                                <button onClick={rejectInvite} type="button" class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-2 py-2 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"><CloseIcon></CloseIcon></button>
                             </div>
                     </div>
                     :
