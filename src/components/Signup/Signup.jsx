@@ -20,6 +20,7 @@ const Signup = () => {
     const [phone, setPhone] = useState("");
     const [profileImage, setProfileImage] = useState(null);
     const [step, setStep] = useState(1);
+    const [username, setUsername] = useState("");
     const handleSignup=async()=>
     {
       createUserWithEmailAndPassword(auth, email, password)
@@ -39,7 +40,7 @@ const Signup = () => {
         friends: [],
         about:"",
         invitations:[],
-        username:""
+        username: username
       })
      } catch (error) {
        console.error(error);
@@ -85,7 +86,7 @@ const Signup = () => {
   step == 1 && (<Emailsection email={email} setEmail={setEmail} password={password} setConfPassword={setConfPassword} setPassword={setPassword} confPassword={confPassword} step={step} setStep={setStep}></Emailsection>)
 }
 {
-  step == 2 && (<Personaldetails phone={phone}  name={name} setPhone={setPhone} setName={setName}  step={step} setStep={setStep}></Personaldetails>)
+  step == 2 && (<Personaldetails phone={phone} username={username} setUsername={setUsername} name={name} setPhone={setPhone} setName={setName}  step={step} setStep={setStep}></Personaldetails>)
 }
 {
   step ==3 && (<Profilepicture  profileImage={profileImage} setProfileImage={setProfileImage} handleSignup={handleSignup}></Profilepicture>)

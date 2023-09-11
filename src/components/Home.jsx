@@ -12,13 +12,13 @@ const Home = () => {
     const [menu, setMenu] = useState(2);
     const handleSignout = async()=>
     {
-        toast("Logging you out", {
-            style: {
-              borderRadius: "7px",
-              background: "#333",
-              color: "#fff",
-            },
-          });
+        // toast("Logging you out", {
+        //     style: {
+        //       borderRadius: "7px",
+        //       background: "#333",
+        //       color: "#fff",
+        //     },
+        //   });
         signOut(auth).then(() => {
             // Sign-out successful.
           }).catch((error) => {

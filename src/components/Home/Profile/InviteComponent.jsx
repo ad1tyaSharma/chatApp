@@ -93,7 +93,10 @@ const InviteComponent = ({id,user,setInvites,userData}) => {
                     <div className='flex justify-between items-center px-2'>
                             <div className='flex'>
                             <img src={data.photoURL} alt="profile image" className='rounded-full h-20 w-20' />
-                            <p className='m-5 text-gray-300'>{data.name}</p>
+                            <div className='flex flex-col justify-center'>
+                            <p className='mx-5 text-gray-300'>{data.name}</p>
+                            <p className='mx-5 text-gray-300'>{data.username}</p>
+                            </div>
                             </div>
                             <div>
                             <button onClick={acceptInvite} type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-2 mr-2 mb-2 dark:bg-gray-700 dark:hover:bg-gray-800 dark:focus:ring-gray-800"><DoneIcon></DoneIcon></button>

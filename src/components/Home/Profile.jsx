@@ -68,7 +68,7 @@ const Profile = ({user,self}) => {
             {
                 openInvitation ? <Modal user={user} userData={userData} setUserData={setUserData} setOpenInvitation={setOpenInvitation}></Modal>:<></>
             }
-        <div style={{opacity : openInvitation ? 0.4 : 1}} className="flex relative flex-col justify-around items-center lg:w-[80vw] w-[70vw] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
+        <div style={{opacity : openInvitation ? 0.4 : 1}} className="overflow-y-auto flex relative flex-col justify-around items-center lg:w-[80vw] w-[70vw] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
             <div className="flex justify-between w-full">
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">My Profile</h5>
             <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" onClick={()=>setShowDropdown  (!showDropdown)} className='text-white px-2  py-1 rounded-full hover:bg-gray-700'>
@@ -121,6 +121,16 @@ const Profile = ({user,self}) => {
               
             </div>
             <div className='mt-2 lg:w-[75vw] w-[65vw]'>
+            <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
+                    <p className='text-lg text-gray-400 font-[500]'>Username {userData && !userData.username ? <span className='italic text-xs'>(if username is not specified, you'll not be discovered in search)</span> : <></>}</p>
+                    {
+                        userData ? 
+                        <p className='text-md text-gray-200 font-[400]'>{userData.username ? userData.username : "Not Specified" }</p>
+                        :
+                        <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-4"></div></div>
+
+                    }
+                </div>
                 <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
                     <p className='text-lg text-gray-400 font-[500]'>Email</p>
                     {
@@ -140,12 +150,7 @@ const Profile = ({user,self}) => {
 
                 }
                 </div>
-                <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                <p className='text-lg text-gray-400 font-[500]'>Birthday</p>
-                {userData ? <p className='text-md text-gray-200 font-[400]'>{(userData.birthday ? userData.birthday : "Not specified")  }</p>:
-                <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-24 mb-4"></div></div>
-                }
-                </div>
+                
                 
             </div>
             <div>

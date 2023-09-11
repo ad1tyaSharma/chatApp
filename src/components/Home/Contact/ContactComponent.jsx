@@ -64,7 +64,10 @@ const ContactComponent = ({contact,userData,user,setUserData}) => {
                     <div className='flex justify-between items-center px-2'>
                             <div className='flex'>
                             <img src={contactData.photoURL} alt="profile image" className='rounded-full h-20 w-20' />
-                            <p className='m-5 text-gray-300'>{contactData.name}</p>
+                            <div className='flex flex-col justify-center'>
+                            <p className='mx-5 text-gray-300'>{contactData.name}</p>
+                            <p className='mx-5 text-gray-300'>{contactData.username}</p>
+                            </div>
                             </div>
                             <div>
                             <button  type="button" className='text-gray-200 my-2 mx-4 hover:text-blue-400'><MessageIcon></MessageIcon></button>

@@ -59,6 +59,17 @@ const Modal = ({setOpenModal,user,userData}) => {
             },
           });
       }
+      else if(userData.friends.includes(searchResult.id) || searchResult.data().invitations.includes(user))
+      {
+        toast.error("User has already been invited", {
+          style: {
+            borderRadius: "7px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+        return
+      }
       else
       {
         try {
