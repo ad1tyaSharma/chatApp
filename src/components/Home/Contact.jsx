@@ -3,7 +3,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { db } from "../../firebase";
 import {getDoc, doc,collection } from "firebase/firestore";
 import { toast } from 'react-hot-toast';
-import Modal from './Profile/Modal';
+import Modal from './Contact/Modal';
 const Contact = ({user}) => {
   const [userData, setUserData] = useState(null);
   const [openModal, setOpenModal] = useState(false);

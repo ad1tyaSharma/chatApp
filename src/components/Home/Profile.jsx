@@ -2,10 +2,42 @@ import React,{useState,useEffect} from 'react';
 import MoreVertOutlinedIcon from '@mui/icons-material/MoreVertOutlined';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { db } from "../../firebase";
-import {getDoc, doc } from "firebase/firestore";
+import {getDoc, doc, } from "firebase/firestore";
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import Modal from './Profile/Modal';
 const Profile = ({user,self}) => {
     const [userData, setUserData] = useState(null);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [openInvitation, setOpenInvitation] = useState(false);
+    const navigate = useNavigate()
+    const handleSignout = async()=>
+    {
+        toast("Logging you out", {
+            style: {
+              borderRadius: "7px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+        signOut(auth).then(() => {
+            // Sign-out successful.
+            navigate('/login')
+          }).catch((error) => {
+            // An error happened.
+            toast.error("Error Logging out", {
+                style: {
+                  borderRadius: "7px",
+                  background: "#333",
+                  color: "#fff",
+                },
+              });
+              console.error(error);
+          });
+          
+    }
     const getUserData = ()=>
     {
         getDoc(doc(db, "users", `${user}`)).then((result) => {
@@ -33,28 +65,30 @@ const Profile = ({user,self}) => {
     }, [user]);
     return (
         <div className='w-[100vw] flex justify-center items-center h-[95vh] '>
-        <div className="flex flex-col justify-around items-center lg:w-[80vw] w-[70vw] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
+            {
+                openInvitation ? <Modal user={user} userData={userData} setUserData={setUserData} setOpenInvitation={setOpenInvitation}></Modal>:<></>
+            }
+        <div style={{opacity : openInvitation ? 0.4 : 1}} className="flex relative flex-col justify-around items-center lg:w-[80vw] w-[70vw] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
             <div className="flex justify-between w-full">
             <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">My Profile</h5>
-            <button className='text-white px-2  py-1 rounded-full hover:bg-gray-700'>
+            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" onClick={()=>setShowDropdown  (!showDropdown)} className='text-white px-2  py-1 rounded-full hover:bg-gray-700'>
              <MoreVertOutlinedIcon></MoreVertOutlinedIcon>
             </button>
-            <div id="dropdownDots" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
-      <li>
-        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
-      </li>
-      <li>
-        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-      </li>
-      <li>
-        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-      </li>
-    </ul>
-    <div class="py-2">
-      <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Separated link</a>
-    </div>
-</div>
+                {
+                    showDropdown ? 
+                    <div id="dropdownDots" class="z-10 absolute right-2 top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w- dark:bg-gray-700 dark:divide-gray-600">
+            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
+                <li>
+                <button onClick={()=>setOpenInvitation(true)} class="block px-4 py-2 ">Invitations</button>
+                </li>
+                <li>
+                <button onClick={handleSignout} class="block px-4 py-2 ">Logout</button>
+                </li>
+                </ul>
+                    </div>
+                    :
+                    <></>
+                }
             </div>
             <div className="flex justify-around items-center flex-col p-2">
                 {
