@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import Sidebar from './Home/Sidebar';
 import Profile from './Home/Profile';
 import Contact from './Home/Contact';
+import Setting from './Home/Setting';
 const Home = () => {
     const navigate = useNavigate()
     const [user, setUser] = useState("");
@@ -52,6 +53,9 @@ const Home = () => {
           }
           {
             menu == 3 ? <Contact user={user.uid}></Contact> : <></>
+          }
+          {
+            menu == 4 ? <Setting user={user.uid}> </Setting> : <></>
           }
         </div>
     );
