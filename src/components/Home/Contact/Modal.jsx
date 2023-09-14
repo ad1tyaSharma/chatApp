@@ -78,13 +78,7 @@ const Modal = ({setOpenModal,user,userData}) => {
                 invitations: [...data.invitations,user]
             });
             //console.log(res);
-            toast.success("Invitation sent", {
-                style: {
-                  borderRadius: "7px",
-                  background: "#333",
-                  color: "#fff",
-                },
-              });
+           
            
             toast.success("Invitation sent", {
                 style: {
