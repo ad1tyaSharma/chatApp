@@ -12,12 +12,14 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import { Upload } from '@mui/icons-material';
+import { Edit, Upload } from '@mui/icons-material';
 import { v4 } from 'uuid';
+import { getAuth, onAuthStateChanged,updateProfile } from "firebase/auth";
 
 const Setting = ({user}) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [userData, setUserData] = useState(null);
+    const [authData, setAuthData] = useState(null);
     const [openProfile, setOpenProfile] = useState(true);
     const [imageInput, setImageInput] = useState(null);
     const [imageUrl, setImageUrl] = useState("");
@@ -27,6 +29,12 @@ const Setting = ({user}) => {
     const [about, setAbout] = useState("");
     const [username, setUsername] = useState("");
     const [usernameChange, setUsernameChange] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [phoneChange, setPhoneChange] = useState(false);
+    const [openAccount, setOpenAccount] = useState(false);
+
+    
+  
     const handleSignout = async()=>
     {
         toast("Logging you out", {
@@ -60,6 +68,7 @@ const Setting = ({user}) => {
             setName(result.data().name)
             setAbout(result.data().about ? result.data().about :"Not Specified")
             setUsername(result.data().username ? result.data().username :"Not Specified")
+            setPhoneNumber(result.data().phoneNumber ? result.data().phoneNumber :"Not Specified")
         }).catch((err) => {
             console.error(err);
             toast.error
@@ -208,6 +217,19 @@ const Setting = ({user}) => {
         {
          getUserData()
         }
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+              // User is signed in, see docs for a list of available properties
+              // https://firebase.google.com/docs/reference/js/auth.user
+              const uid = user.uid;
+              setAuthData(user)
+              console.log(user);
+              // ...
+            } else {
+              // User is signed out
+              // ...
+            }
+          });
      }, [user]);
     return (
       <div className="w-[100vw] h-[100vh] flex justify-center items-center">
@@ -353,7 +375,8 @@ const Setting = ({user}) => {
             <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
                     <p className='text-lg text-gray-400 font-[500]'>Username {userData && !userData.username ? <span className='italic text-xs'>(if username is not specified, you'll not be discovered in search)</span> : <></>}</p>
                     {
-                    userData? <div class="relative">
+                    userData?
+                     <div class="relative">
         
                     <input type="text" readOnly={!usernameChange} onChange={(e)=>setUsername(e.target.value)}  id="default-search" value={ username} class="block w-full p-4  text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Mockups, Logos..." />
                     {
@@ -380,7 +403,11 @@ const Setting = ({user}) => {
                     <p className='text-lg text-gray-400 font-[500]'>Email</p>
                     {
                         userData ? 
-                        <p className='text-md text-gray-200 font-[400]'>{userData.email ? userData.email : "Not Specified" }</p>
+                                        <div class="relative">
+                       
+                        <input readOnly value={userData.email} type="text" id="default-search" class="block w-full p-4  text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  />
+                        <button type="submit" class="text-white absolute right-2 bottom-2 opacity-50 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><Edit></Edit></button>
+                    </div>
                         :
                         <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-4"></div></div>
 
@@ -390,7 +417,25 @@ const Setting = ({user}) => {
                 <p className='text-lg text-gray-400 font-[500]'>Phone Number</p>
                 {
                     userData ? 
-                    <p className='text-md text-gray-200 font-[400]'>{ (userData.phoneNumber ? userData.phoneNumber : "Not specified")}</p>:
+                    <div class="relative">
+        
+                    <input type="text" readOnly={!phoneChange} onChange={(e)=>setPhoneNumber(e.target.value)}  id="default-search" value={ phoneNumber} class="block w-full p-4  text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Mockups, Logos..." />
+                    {
+                        phoneChange ?<button type="submit" onClick={async()=>
+                        {
+                            setUserData({...userData,phoneNumber})
+                            //console.log(validateUsername());
+
+                            handleUpdate('phoneNumber',phoneNumber)
+                            setPhoneChange(false)
+                        
+                            
+                        }} class="text-white absolute right-2 bottom-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><SaveIcon></SaveIcon></button>
+                        :
+                        <button type="submit" onClick={()=>setPhoneChange(true)} class="text-white absolute right-2 bottom-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"><EditIcon></EditIcon></button>
+
+                    }
+                </div>  :
                     <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-24 mb-4"></div></div>
 
                 }
@@ -407,180 +452,7 @@ const Setting = ({user}) => {
            <></>
           }
 
-          {/* <div>
-            <div className="flex justify-between w-full">
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">My Profile</h5>
-            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" onClick={()=>setShowDropdown  (!showDropdown)} className='text-white px-2  py-1 rounded-full hover:bg-gray-700'>
-             <MoreVertOutlinedIcon></MoreVertOutlinedIcon>
-            </button>
-                {
-                    showDropdown ? 
-                    <div id="dropdownDots" class="z-10 absolute right-2 top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w- dark:bg-gray-700 dark:divide-gray-600">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
-                
-                <li>
-                <button onClick={handleSignout} class="block px-4 py-2 ">Logout</button>
-                </li>
-                </ul>
-                    </div>
-                    :
-                    <></>
-                }
-            </div>
-            <div className="flex justify-around items-center flex-col p-2">
-                {
-                    userData ? <img className='h-16 lg:w-32  w-16 lg:h-32 rounded-full' src={userData.photoURL} alt="profile picture" /> :
-                    <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded sm:w-96 dark:bg-gray-700 mb-2">
-                    <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                    </svg>
-                </div>
-                }
-                
-                
-                {
-                    userData ? <h5 className='text-xl text-white font-[600]'>{ userData.name }</h5> : (<div role="status" className="max-w-sm animate-pulse"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div></div>)
-                }
-                <div className={`mb-4 flex items-center`}>
-                    {userData ? userData.status == 'idle'?
-                    (<span className='w-2 h-2 rounded-full bg-green-600'></span>) :
-                    (<span className='w-2 h-2 rounded-full bg-red-600'></span>) : <div role="status" className="max-w-sm animate-pulse"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-24 mb-4"></div></div>
-                    }
-                    <span className='ml-2 text-white text-md capitalize'>{userData ? userData.status : ""}</span></div>
-                <div className='bg-gray-600 lg:w-[75vw] w-[65vw] h-[1px]'></div>
-            </div>
-            <div className="mt-2 lg:w-[75vw] w-[65vw] rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2">
-                <p className='text-lg text-gray-400 font-[500]'>About</p>
-                {
-                    userData?  <p className='text-md text-gray-200 font-[400]'> { userData.about ? userData.about : "Not Specified"}</p> : 
-                    <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-64 mb-4"></div></div>
-                }
-              
-            </div>
-            <div className='mt-2 lg:w-[75vw] w-[65vw]'>
-            <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                    <p className='text-lg text-gray-400 font-[500]'>Username {userData && !userData.username ? <span className='italic text-xs'>(if username is not specified, you'll not be discovered in search)</span> : <></>}</p>
-                    {
-                        userData ? 
-                        <p className='text-md text-gray-200 font-[400]'>{userData.username ? userData.username : "Not Specified" }</p>
-                        :
-                        <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-4"></div></div>
 
-                    }
-                </div>
-                <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                    <p className='text-lg text-gray-400 font-[500]'>Email</p>
-                    {
-                        userData ? 
-                        <p className='text-md text-gray-200 font-[400]'>{userData.email ? userData.email : "Not Specified" }</p>
-                        :
-                        <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-4"></div></div>
-
-                    }
-                </div>
-                <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                <p className='text-lg text-gray-400 font-[500]'>Phone Number</p>
-                {
-                    userData ? 
-                    <p className='text-md text-gray-200 font-[400]'>{ (userData.phoneNumber ? userData.phoneNumber : "Not specified")}</p>:
-                    <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-24 mb-4"></div></div>
-
-                }
-                </div>
-                
-                
-            </div>
-            <div>
-
-            </div>
-            </div>
-            <div className='mt-5'>
-            <div className="flex justify-between w-full">
-            <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">My Profile</h5>
-            <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown" onClick={()=>setShowDropdown  (!showDropdown)} className='text-white px-2  py-1 rounded-full hover:bg-gray-700'>
-             <MoreVertOutlinedIcon></MoreVertOutlinedIcon>
-            </button>
-                {
-                    showDropdown ? 
-                    <div id="dropdownDots" class="z-10 absolute right-2 top-20 bg-white divide-y divide-gray-100 rounded-lg shadow w- dark:bg-gray-700 dark:divide-gray-600">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownMenuIconButton">
-                
-                <li>
-                <button onClick={handleSignout} class="block px-4 py-2 ">Logout</button>
-                </li>
-                </ul>
-                    </div>
-                    :
-                    <></>
-                }
-            </div>
-            <div className="flex justify-around items-center flex-col p-2">
-                {
-                    userData ? <img className='h-16 lg:w-32  w-16 lg:h-32 rounded-full' src={userData.photoURL} alt="profile picture" /> :
-                    <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded sm:w-96 dark:bg-gray-700 mb-2">
-                    <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                    </svg>
-                </div>
-                }
-                
-                
-                {
-                    userData ? <h5 className='text-xl text-white font-[600]'>{ userData.name }</h5> : (<div role="status" className="max-w-sm animate-pulse"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div></div>)
-                }
-                <div className={`mb-4 flex items-center`}>
-                    {userData ? userData.status == 'idle'?
-                    (<span className='w-2 h-2 rounded-full bg-green-600'></span>) :
-                    (<span className='w-2 h-2 rounded-full bg-red-600'></span>) : <div role="status" className="max-w-sm animate-pulse"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-24 mb-4"></div></div>
-                    }
-                    <span className='ml-2 text-white text-md capitalize'>{userData ? userData.status : ""}</span></div>
-                <div className='bg-gray-600 lg:w-[75vw] w-[65vw] h-[1px]'></div>
-            </div>
-            <div className="mt-2 lg:w-[75vw] w-[65vw] rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2">
-                <p className='text-lg text-gray-400 font-[500]'>About</p>
-                {
-                    userData?  <p className='text-md text-gray-200 font-[400]'> { userData.about ? userData.about : "Not Specified"}</p> : 
-                    <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-64 mb-4"></div></div>
-                }
-              
-            </div>
-            <div className='mt-2 lg:w-[75vw] w-[65vw]'>
-            <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                    <p className='text-lg text-gray-400 font-[500]'>Username {userData && !userData.username ? <span className='italic text-xs'>(if username is not specified, you'll not be discovered in search)</span> : <></>}</p>
-                    {
-                        userData ? 
-                        <p className='text-md text-gray-200 font-[400]'>{userData.username ? userData.username : "Not Specified" }</p>
-                        :
-                        <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-4"></div></div>
-
-                    }
-                </div>
-                <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                    <p className='text-lg text-gray-400 font-[500]'>Email</p>
-                    {
-                        userData ? 
-                        <p className='text-md text-gray-200 font-[400]'>{userData.email ? userData.email : "Not Specified" }</p>
-                        :
-                        <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-4"></div></div>
-
-                    }
-                </div>
-                <div className='mt-2 rounded-lg dark:border-gray-400 bg-gray-700 px-4 py-2'>
-                <p className='text-lg text-gray-400 font-[500]'>Phone Number</p>
-                {
-                    userData ? 
-                    <p className='text-md text-gray-200 font-[400]'>{ (userData.phoneNumber ? userData.phoneNumber : "Not specified")}</p>:
-                    <div role="status" className="max-w-sm animate-pulse mt-1"><div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-24 mb-4"></div></div>
-
-                }
-                </div>
-                
-                
-            </div>
-            <div>
-
-            </div>
-            </div> */}
         </div>
       </div>
     );
