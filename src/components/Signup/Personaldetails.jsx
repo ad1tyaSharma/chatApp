@@ -123,7 +123,7 @@ const Personaldetails = ({phone,name,setPhone,setName,step,setStep,username,setU
             <p className="text-xs font-light text-gray-500 dark:text-gray-400">Password must have atleast one uppercase, one lowercase, one number and one special character.</p>
         </div> */}
         <div className="flex space-x-2">
-        <button onClick={handleVerify} type="button" class="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Verify</button>
+        <button onClick={handleVerify} disabled={!isUserNameValid ? false : true} style={{opacity: !isUserNameValid ? 1 : 0.5}} type="button" class="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Verify</button>
 
 <button disabled={isUserNameValid ? false : true} style={{opacity: isUserNameValid ? 1 : 0.5}} type="submit" className="w-full flex justify-center items-center text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center  dark:focus:ring-[#4285F4]/55 mr-2 mb-2"> Next
 <svg className="w-3.5 h-3.5 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
