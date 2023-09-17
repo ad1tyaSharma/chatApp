@@ -4,17 +4,66 @@ import {
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
-  signInWithEmailAndPassword,
+  signInWithEmailAndPassword,sendPasswordResetEmail
 } from "firebase/auth";
 import { auth } from "../firebase";
 import { toast } from "react-hot-toast";
 import { db } from "../firebase";
 import { collection, addDoc, getDoc, setDoc, doc } from "firebase/firestore";
+import Modal from "./Login/Modal";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [resetModal, setResetModal] = useState(false);
+  
   const provider = new GoogleAuthProvider();
   const navigate = useNavigate();
+  function isEmailValid(email) {
+    // Regular expression for a basic email pattern
+    const emailPattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return emailPattern.test(email);
+  }
+  const handlePasswordReset = ()=>
+  {
+    setResetModal(false)
+    if(!isEmailValid(email))
+    {
+      toast.error(`Invalid Email  `, {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+      sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent!
+      toast.success("Password reset email sent!", {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      // ..
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error(error);
+      toast.error(`Error logging in(${errorCode})`, {
+        style: {
+          borderRadius: "7px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      // ..
+    });
+
+  }
   const handleLogin = async (e) => {
     e.preventDefault();
     toast("Logging you in", {
@@ -118,10 +167,13 @@ const Login = () => {
       });
   };
   return (
-    <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 relative" >
       <section className="bg-gray-50 dark:bg-gray-900">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 lg:w-[60vw] w-[70vw]">
-          <div className=" bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 lg:w-[60vw] w-[70vw]">
+        <div className="flex flex-col items-center justify-center relative px-6 py-8 mx-auto md:h-screen lg:py-0 lg:w-[60vw] w-[70vw]">
+          {
+            resetModal ? <Modal email={email} setEmail={setEmail} setResetModal={handlePasswordReset}></Modal>:<></>
+          }
+          <div style={{opacity : resetModal ? 0.2 : 1}} className="bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 lg:w-[60vw] w-[70vw]">
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                 Sign in to your account
@@ -217,7 +269,21 @@ const Login = () => {
                   >
                     Sign up
                   </NavLink>
+                  <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                  
+                  <div
+                     onClick={()=>
+                    {
+                      setEmail("")
+                      setResetModal(true)
+                    }}
+                    className="font-medium text-primary-600 hover:underline dark:text-primary-500 cursor-pointer"
+                  >
+                    Forgot Password
+                  </div>
                 </p>
+                </p>
+                
               </form>
             </div>
           </div>
