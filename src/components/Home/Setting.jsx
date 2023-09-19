@@ -31,7 +31,7 @@ import {
   GoogleAuthProvider,
   EmailAuthProvider,
   reauthenticateWithCredential,
-  signInWithPopup,
+  signInWithPopup, updatePassword
 } from "firebase/auth";
 import Modal from "./Setting/Modal";
 const Setting = ({ user }) => {
@@ -51,17 +51,19 @@ const Setting = ({ user }) => {
   const [phoneChange, setPhoneChange] = useState(false);
   const [openAccount, setOpenAccount] = useState(false);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  const [openUpdatePassword, setOpenUpdatePassword] = useState(false);
   const [password, setpassword] = useState("");
-  const handleDelete = () => {
-    if (authData.providerData[0].providerId == "password") {
-      setOpenPasswordModal(true);
+  const [newPassword, setNewPassword] = useState("");
+  const handleEmailDelete = ()=>
+  {
+    
       const credential = EmailAuthProvider.credential(authData.email, password);
       reauthenticateWithCredential(authData, credential)
         .then(() => {
           // User re-authenticated.
           deleteUser(authData)
             .then(async() => {
-              await deleteDoc(doc(db, "cities", authData.uid));
+              await deleteDoc(doc(db, "users", authData.uid));
               toast.success("User Deleted", {
                 style: {
                   borderRadius: "7px",
@@ -95,7 +97,52 @@ const Setting = ({ user }) => {
           });
           // ...
         });
-    } else {
+  
+  }
+  const handleUpdatePassword = ()=>
+  {
+    console.log({password,newPassword});
+      const credential = EmailAuthProvider.credential(authData.email, password);
+      reauthenticateWithCredential(authData, credential)
+        .then(() => {
+          // User re-authenticated.
+          updatePassword(authData, newPassword).then(() => {
+            // Update successful.
+            toast.success("Password Updated", {
+              style: {
+                borderRadius: "7px",
+                background: "#333",
+                color: "#fff",
+              },
+            });
+          }).catch((error) => {
+            // An error ocurred
+            console.error(error);
+            toast.error("Please try again", {
+              style: {
+                borderRadius: "7px",
+                background: "#333",
+                color: "#fff",
+              },
+            });
+            // ...
+          });
+        })
+        .catch((error) => {
+          // An error ocurred
+          console.error(error);
+          toast.error("Invalid Password", {
+            style: {
+              borderRadius: "7px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+          // ...
+        });
+  }
+  const handleGoogleDelete = () => {
+   
       const provider = new GoogleAuthProvider();
       signInWithPopup(auth, provider)
         .then(async (result) => {
@@ -164,7 +211,7 @@ const Setting = ({ user }) => {
           });
           // ...
         });
-    }
+    
   };
 
   const handleSignout = async () => {
@@ -364,12 +411,29 @@ const Setting = ({ user }) => {
           password={password}
           setpassword={setpassword}
           setOpenPasswordModal={setOpenPasswordModal}
+          handleEmailDelete={handleEmailDelete}
+          use="delete"
+        ></Modal>
+      ) : (
+        <></>
+      )}
+      {openUpdatePassword ? (
+        <Modal
+          password={password}
+          setpassword={setpassword}
+          // setOpenPasswordModal={setOpenPasswordModal}
+          // handleEmailDelete={handleEmailDelete}
+          handleUpdatePassword={handleUpdatePassword}
+          newPassword={newPassword}
+          setNewPassword={setNewPassword}
+          setOpenUpdatePassword={setOpenUpdatePassword}
+          use="update"
         ></Modal>
       ) : (
         <></>
       )}
       <div
-        style={{ opacity: openPasswordModal ? 0.5 : 1 }}
+        style={{ opacity: openPasswordModal || openUpdatePassword ? 0.5 : 1 }}
         className="overflow-y-auto flex relative flex-col  items-center lg:w-[80vw] w-[70vw] h-[80vh] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 "
       >
         <div className="lg:w-[75vw] w-[65vw] flex justify-between items-center my-5">
@@ -782,10 +846,42 @@ const Setting = ({ user }) => {
                     </p>
                     <button
                       type="submit"
-                      onClick={handleDelete}
+                      onClick={()=>
+                      {
+                        if (authData.providerData[0].providerId == "password") {
+
+                            setOpenPasswordModal(true)
+                        }
+                        else
+                        {
+                          handleGoogleDelete()
+                        }
+                        console.log(authData.providerData[0].providerId);
+                      }}
                       class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                     >
                       Delete
+                    </button>
+                  </div>
+                ) : (
+                  <div role="status" className="max-w-sm animate-pulse mt-1">
+                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-64 mb-4"></div>
+                  </div>
+                )}
+                {authData && authData.providerData[0].providerId == "password" ? (
+                  <div className="lg:w-[70vw] w-[60vw] flex justify-between">
+                    <p className="text-white font-[500] text-lg">
+                      Change Password
+                    </p>
+                    <button
+                      type="submit"
+                      onClick={()=>
+                      {
+                        setOpenUpdatePassword(true)
+                      }}
+                      class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                    >
+                      Update
                     </button>
                   </div>
                 ) : (
