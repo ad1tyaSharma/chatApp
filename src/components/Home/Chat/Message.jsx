@@ -90,7 +90,6 @@ const Message = ({ stage, setStage, user }) => {
   const getChannelData = (channel) => {
     getDoc(doc(db, "channels", channel))
       .then((result) => {
-        //console.log(result.data());
         setChannels(result.data());
       })
       .catch((err) => {
@@ -108,7 +107,6 @@ const Message = ({ stage, setStage, user }) => {
   const getUserData = (id) => {
     getDoc(doc(db, "users", id))
       .then((result) => {
-        console.log(result.data());
         setUserData(result.data());
       })
       .catch((err) => {
@@ -134,9 +132,8 @@ const Message = ({ stage, setStage, user }) => {
         if (docSnapshot.exists()) {
           // The document exists, you can access its data using docSnapshot.data()
           const channelData = docSnapshot.data().messages;
-          setMessages(channelData)
+          setMessages(channelData);
           // Handle the channel data as needed
-          console.log("Channel Data:", channelData);
         } else {
           // The document doesn't exist
           console.log("Channel does not exist.");
@@ -147,7 +144,6 @@ const Message = ({ stage, setStage, user }) => {
   }, [stage]);
   useEffect(() => {
     if (channels && user) {
-      console.log(channels);
       friend = channels.members.filter((el, key) => el != user)[0];
       getUserData(friend);
     }
@@ -204,7 +200,9 @@ const Message = ({ stage, setStage, user }) => {
                         : "text-gray-200 bg-gray-700"
                     }`}
                   >
-                    <p class="mb-0" style={{wordWrap:" break-word"}}>{message.text}</p>
+                    <p class="mb-0" style={{ wordWrap: " break-word" }}>
+                      {message.text}
+                    </p>
                     <p class="mt-1 mb-0 text-xs text-right text-white/50">
                       <i class="align-middle ri-time-line"></i>{" "}
                       <span class="align-middle">

@@ -27,7 +27,6 @@ const Signup = () => {
   .then(async(userCredential) => {
     // Signed in 
     const user = userCredential.user;
-    console.log(user);
     try {
       await setDoc(doc(db,"users",`${user.uid}`),{
         name ,
@@ -65,7 +64,6 @@ const Signup = () => {
   .catch((error) => {
     const errorCode = error.code;
     const errorMessage = error.message;
-    console.log(errorCode);
     toast.error(`Error creating new account (${errorCode})`, {
       style: {
         borderRadius: "7px",

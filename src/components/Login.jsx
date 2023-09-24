@@ -77,7 +77,6 @@ const Login = () => {
       .then(async (userCredential) => {
         // Signed in
         const user = userCredential.user;
-        console.log(user);
         toast.success("Logged in successfully", {
           style: {
             borderRadius: "7px",

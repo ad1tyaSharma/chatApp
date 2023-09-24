@@ -10,7 +10,7 @@ import {
   where,
   query,
   getDocs,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 
 import { signOut } from "firebase/auth";
@@ -31,7 +31,8 @@ import {
   GoogleAuthProvider,
   EmailAuthProvider,
   reauthenticateWithCredential,
-  signInWithPopup, updatePassword
+  signInWithPopup,
+  updatePassword,
 } from "firebase/auth";
 import Modal from "./Setting/Modal";
 const Setting = ({ user }) => {
@@ -54,59 +55,55 @@ const Setting = ({ user }) => {
   const [openUpdatePassword, setOpenUpdatePassword] = useState(false);
   const [password, setpassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const handleEmailDelete = ()=>
-  {
-    
-      const credential = EmailAuthProvider.credential(authData.email, password);
-      reauthenticateWithCredential(authData, credential)
-        .then(() => {
-          // User re-authenticated.
-          deleteUser(authData)
-            .then(async() => {
-              await deleteDoc(doc(db, "users", authData.uid));
-              toast.success("User Deleted", {
-                style: {
-                  borderRadius: "7px",
-                  background: "#333",
-                  color: "#fff",
-                },
-              });
-              // User deleted.
-            })
-            .catch((error) => {
-              // An error ocurred
-              // ...
-              toast.error("Error deleting user", {
-                style: {
-                  borderRadius: "7px",
-                  background: "#333",
-                  color: "#fff",
-                },
-              });
+  const handleEmailDelete = () => {
+    const credential = EmailAuthProvider.credential(authData.email, password);
+    reauthenticateWithCredential(authData, credential)
+      .then(() => {
+        // User re-authenticated.
+        deleteUser(authData)
+          .then(async () => {
+            await deleteDoc(doc(db, "users", authData.uid));
+            toast.success("User Deleted", {
+              style: {
+                borderRadius: "7px",
+                background: "#333",
+                color: "#fff",
+              },
             });
-        })
-        .catch((error) => {
-          // An error ocurred
-          console.error(error);
-          toast.error("Please try again", {
-            style: {
-              borderRadius: "7px",
-              background: "#333",
-              color: "#fff",
-            },
+            // User deleted.
+          })
+          .catch((error) => {
+            // An error ocurred
+            // ...
+            toast.error("Error deleting user", {
+              style: {
+                borderRadius: "7px",
+                background: "#333",
+                color: "#fff",
+              },
+            });
           });
-          // ...
+      })
+      .catch((error) => {
+        // An error ocurred
+        console.error(error);
+        toast.error("Please try again", {
+          style: {
+            borderRadius: "7px",
+            background: "#333",
+            color: "#fff",
+          },
         });
-  
-  }
-  const handleUpdatePassword = ()=>
-  {
-    console.log({password,newPassword});
-      const credential = EmailAuthProvider.credential(authData.email, password);
-      reauthenticateWithCredential(authData, credential)
-        .then(() => {
-          // User re-authenticated.
-          updatePassword(authData, newPassword).then(() => {
+        // ...
+      });
+  };
+  const handleUpdatePassword = () => {
+    const credential = EmailAuthProvider.credential(authData.email, password);
+    reauthenticateWithCredential(authData, credential)
+      .then(() => {
+        // User re-authenticated.
+        updatePassword(authData, newPassword)
+          .then(() => {
             // Update successful.
             toast.success("Password Updated", {
               style: {
@@ -115,7 +112,8 @@ const Setting = ({ user }) => {
                 color: "#fff",
               },
             });
-          }).catch((error) => {
+          })
+          .catch((error) => {
             // An error ocurred
             console.error(error);
             toast.error("Please try again", {
@@ -127,91 +125,89 @@ const Setting = ({ user }) => {
             });
             // ...
           });
-        })
-        .catch((error) => {
-          // An error ocurred
-          console.error(error);
-          toast.error("Invalid Password", {
-            style: {
-              borderRadius: "7px",
-              background: "#333",
-              color: "#fff",
-            },
-          });
-          // ...
+      })
+      .catch((error) => {
+        // An error ocurred
+        console.error(error);
+        toast.error("Invalid Password", {
+          style: {
+            borderRadius: "7px",
+            background: "#333",
+            color: "#fff",
+          },
         });
-  }
+        // ...
+      });
+  };
   const handleGoogleDelete = () => {
-   
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider)
-        .then(async (result) => {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          const credential = GoogleAuthProvider.credentialFromResult(result);
-          // const token = credential.accessToken;
-          // The signed-in user info.
-          reauthenticateWithCredential(authData, credential)
-            .then(() => {
-              // User re-authenticated.
-              deleteUser(authData)
-                .then(async() => {
-                  await deleteDoc(doc(db, "users", authData.uid));
-                  toast.success("User Deleted", {
-                    style: {
-                      borderRadius: "7px",
-                      background: "#333",
-                      color: "#fff",
-                    },
-                  });
-                  // User deleted.
-                })
-                .catch((error) => {
-                  // An error ocurred
-                  // ...
-                  console.error(error);
-                  toast.error("Error deleting user", {
-                    style: {
-                      borderRadius: "7px",
-                      background: "#333",
-                      color: "#fff",
-                    },
-                  });
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        // const token = credential.accessToken;
+        // The signed-in user info.
+        reauthenticateWithCredential(authData, credential)
+          .then(() => {
+            // User re-authenticated.
+            deleteUser(authData)
+              .then(async () => {
+                await deleteDoc(doc(db, "users", authData.uid));
+                toast.success("User Deleted", {
+                  style: {
+                    borderRadius: "7px",
+                    background: "#333",
+                    color: "#fff",
+                  },
                 });
-            })
-            .catch((error) => {
-              // An error ocurred
-              toast.error("Please try again", {
-                style: {
-                  borderRadius: "7px",
-                  background: "#333",
-                  color: "#fff",
-                },
+                // User deleted.
+              })
+              .catch((error) => {
+                // An error ocurred
+                // ...
+                console.error(error);
+                toast.error("Error deleting user", {
+                  style: {
+                    borderRadius: "7px",
+                    background: "#333",
+                    color: "#fff",
+                  },
+                });
               });
-              // ...
+          })
+          .catch((error) => {
+            // An error ocurred
+            toast.error("Please try again", {
+              style: {
+                borderRadius: "7px",
+                background: "#333",
+                color: "#fff",
+              },
             });
-
-          // IdP data available using getAdditionalUserInfo(result)
-          // ...
-        })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code;
-          const errorMessage = error.message;
-
-          // // The email of the user's account used.
-          // const email = error.customData.email;
-          // // The AuthCredential type that was used.
-          // const credential = GoogleAuthProvider.credentialFromError(error);
-          toast.error(`Error logging in, ${errorCode}`, {
-            style: {
-              borderRadius: "7px",
-              background: "#333",
-              color: "#fff",
-            },
+            // ...
           });
-          // ...
+
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+
+        // // The email of the user's account used.
+        // const email = error.customData.email;
+        // // The AuthCredential type that was used.
+        // const credential = GoogleAuthProvider.credentialFromError(error);
+        toast.error(`Error logging in, ${errorCode}`, {
+          style: {
+            borderRadius: "7px",
+            background: "#333",
+            color: "#fff",
+          },
         });
-    
+        // ...
+      });
   };
 
   const handleSignout = async () => {
@@ -242,7 +238,6 @@ const Setting = ({ user }) => {
   const getUserData = () => {
     getDoc(doc(db, "users", `${user}`))
       .then((result) => {
-        //console.log(result.data());
         setUserData(result.data());
         setName(result.data().name);
         setAbout(result.data().about ? result.data().about : "Not Specified");
@@ -292,9 +287,7 @@ const Setting = ({ user }) => {
       )
         .then((response) => response.json())
         .then((data) => {
-          //console.log(data);
           setImageUrl(data.secure_url);
-          console.log(imageUrl);
           toast.success("Image Uploaded", {
             style: {
               borderRadius: "7px",
@@ -367,7 +360,6 @@ const Setting = ({ user }) => {
   };
   const handleUpdate = async (field, value) => {
     try {
-      console.log(userData);
       await updateDoc(doc(db, "users", user), {
         [field]: value,
       });
@@ -396,7 +388,6 @@ const Setting = ({ user }) => {
         // https://firebase.google.com/docs/reference/js/auth.user
         const uid = user.uid;
         setAuthData(user);
-        console.log(user);
         // ...
       } else {
         // User is signed out
@@ -712,8 +703,6 @@ const Setting = ({ user }) => {
                           type="submit"
                           onClick={async () => {
                             setUserData({ ...userData, username });
-                            console.log(validateUsername());
-
                             if ((await validateUsername()) === true) {
                               handleUpdate("username", username);
                               setUsernameChange(false);
@@ -783,8 +772,6 @@ const Setting = ({ user }) => {
                           type="submit"
                           onClick={async () => {
                             setUserData({ ...userData, phoneNumber });
-                            //console.log(validateUsername());
-
                             handleUpdate("phoneNumber", phoneNumber);
                             setPhoneChange(false);
                           }}
@@ -846,17 +833,12 @@ const Setting = ({ user }) => {
                     </p>
                     <button
                       type="submit"
-                      onClick={()=>
-                      {
+                      onClick={() => {
                         if (authData.providerData[0].providerId == "password") {
-
-                            setOpenPasswordModal(true)
+                          setOpenPasswordModal(true);
+                        } else {
+                          handleGoogleDelete();
                         }
-                        else
-                        {
-                          handleGoogleDelete()
-                        }
-                        console.log(authData.providerData[0].providerId);
                       }}
                       class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                     >
@@ -868,16 +850,16 @@ const Setting = ({ user }) => {
                     <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-64 mb-4"></div>
                   </div>
                 )}
-                {authData && authData.providerData[0].providerId == "password" ? (
+                {authData &&
+                authData.providerData[0].providerId == "password" ? (
                   <div className="lg:w-[70vw] w-[60vw] flex justify-between">
                     <p className="text-white font-[500] text-lg">
                       Change Password
                     </p>
                     <button
                       type="submit"
-                      onClick={()=>
-                      {
-                        setOpenUpdatePassword(true)
+                      onClick={() => {
+                        setOpenUpdatePassword(true);
                       }}
                       class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
                     >
