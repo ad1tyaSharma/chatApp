@@ -5,7 +5,7 @@ import {getDoc, doc,collection } from "firebase/firestore";
 import { toast } from 'react-hot-toast';
 import Modal from './Contact/Modal';
 import ContactComponent from './Contact/ContactComponent';
-const Contact = ({user}) => {
+const Contact = ({user,setStage,setMenu}) => {
   const [userData, setUserData] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
@@ -55,7 +55,7 @@ const Contact = ({user}) => {
           userData ? userData.friends.length >0 ?
           userData.friends.map((contact,key)=>{
             return(
-              <ContactComponent contact={contact} userData={userData} setUserData={setUserData} user={user}></ContactComponent>
+              <ContactComponent setStage={setStage} setMenu={setMenu} contact={contact} userData={userData} setUserData={setUserData} user={user}></ContactComponent>
             )
           })
           : 

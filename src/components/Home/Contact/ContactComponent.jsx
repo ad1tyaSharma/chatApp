@@ -3,8 +3,9 @@ import MessageIcon from '@mui/icons-material/Message';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import toast from 'react-hot-toast';
 import { db } from '../../../firebase';
-import { getDoc,doc, updateDoc} from 'firebase/firestore';
-const ContactComponent = ({contact,userData,user,setUserData}) => {
+import { getDoc,doc, updateDoc,setDoc,collection,query,where,getDocs} from 'firebase/firestore';
+import { v4 } from 'uuid';
+const ContactComponent = ({contact,userData,user,setUserData,setStage,setMenu}) => {
     const [contactData, setContactData] = useState(null);
     const getUserData = ()=>
     {
@@ -14,7 +15,7 @@ const ContactComponent = ({contact,userData,user,setUserData}) => {
         }).catch((err) => {
             console.error(err);
             toast.error
-            ("Error fetching user", {
+   ``         ("Error fetching user", {
                 style: {
                   borderRadius: "7px",
                   background: "#333",
@@ -53,6 +54,50 @@ const ContactComponent = ({contact,userData,user,setUserData}) => {
         }
 
     }
+    const startChat = async()=>
+    {
+      const channelsCollection = collection(db, 'channels');
+      const q = query(channelsCollection, where('members', 'array-contains',user));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
+      if(querySnapshot && !querySnapshot.empty)
+      {
+        
+        querySnapshot.forEach(el=>
+            {
+
+                if(el.data().members.includes(contact))
+                {
+                    setStage(el.id)
+                    setMenu(2)
+                }
+            })
+        return
+      }
+      
+        
+        // new chat
+        const id = v4()
+        const collectionRef = doc(db, 'channels',id);
+        setDoc(collectionRef, {
+            members : [user,contact],
+            messages:[]
+        })
+          .then(async() => {
+            console.log("Document successfully written!");
+            await updateDoc(doc(db, "users",user ), {
+              channels: [...userData.channels,id]
+          });
+          await updateDoc(doc(db, "users",contact ), {
+            channels: [...contactData.channels,id]
+        });
+        setStage(id)
+        setMenu(2)
+          })
+          .catch((error) => {
+            console.error("Error writing document: ", error);
+          });
+    }
     useEffect(() => {
         getUserData()
         console.log(contact);
@@ -70,7 +115,7 @@ const ContactComponent = ({contact,userData,user,setUserData}) => {
                             </div>
                             </div>
                             <div>
-                            <button  type="button" className='text-gray-200 my-2 mx-4 hover:text-blue-400'><MessageIcon></MessageIcon></button>
+                            <button  type="button" className='text-gray-200 my-2 mx-4 hover:text-blue-400' onClick={startChat}><MessageIcon></MessageIcon></button>
                                 <button onClick={handleRemoveContact} type="button" className='text-gray-200 m-2 hover:text-red-400'><PersonRemoveIcon></PersonRemoveIcon></button>
                             </div>
                     </div>

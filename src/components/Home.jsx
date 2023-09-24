@@ -7,10 +7,12 @@ import Sidebar from './Home/Sidebar';
 import Profile from './Home/Profile';
 import Contact from './Home/Contact';
 import Setting from './Home/Setting';
+import Chat from './Home/Chat';
 const Home = () => {
     const navigate = useNavigate()
     const [user, setUser] = useState("");
     const [menu, setMenu] = useState(2);
+    const [stage, setStage] = useState(0);
     const handleSignout = async()=>
     {
         // toast("Logging you out", {
@@ -52,7 +54,10 @@ const Home = () => {
             menu == 1 ? <Profile self={user.uid} user={user.uid}></Profile> : <></>
           }
           {
-            menu == 3 ? <Contact user={user.uid}></Contact> : <></>
+            menu == 2 ? <Chat setMenu={setMenu} stage={stage} setStage={setStage} user={user.uid}></Chat> : <></>
+          }
+          {
+            menu == 3 ? <Contact user={user.uid} setMenu={setMenu} setStage={setStage} ></Contact> : <></>
           }
           {
             menu == 4 ? <Setting user={user.uid}> </Setting> : <></>

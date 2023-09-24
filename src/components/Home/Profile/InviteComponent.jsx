@@ -13,9 +13,12 @@ const InviteComponent = ({id,user,setInvites,userData}) => {
         console.log(invites);
         
         try {
-            const res =  await updateDoc(doc(db, "users",user), {
+            await updateDoc(doc(db, "users",user), {
                 invitations: invites,
                 friends : [...userData.friends,id]
+            });
+             await updateDoc(doc(db, "users",id), {
+                friends : [...data.friends,user]
             });
             toast.success("Invite accepted", {
                 style: {
