@@ -885,9 +885,7 @@ const Setting = ({ user }) => {
                     </button>
                   </div>
                 ) : (
-                  <div role="status" className="max-w-sm animate-pulse mt-1">
-                    <div className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-64 mb-4"></div>
-                  </div>
+                  <></>
                 )}
               </div>
             </div>

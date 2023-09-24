@@ -1,59 +1,55 @@
 import React, { useState, useEffect } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { db } from "../../../firebase";
-import { getDoc, doc } from "firebase/firestore";
+import { db, rdb } from "../../../firebase";
+import {
+  getDoc,
+  doc,
+  serverTimestamp,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
 import toast from "react-hot-toast";
-import SendIcon from '@mui/icons-material/Send';
+import SendIcon from "@mui/icons-material/Send";
 import Send from "@mui/icons-material/Send";
+import Profile from "../Profile";
 const Message = ({ stage, setStage, user }) => {
   const [userData, setUserData] = useState(null);
   const [channels, setChannels] = useState(null);
+  const [menu, setMenu] = useState(0);
   var friend;
   const [messageInput, setMessageInput] = useState("");
-  const [messages, setMessages] = useState([
-    // Sample messages (replace with your actual data)
-    {
-      text: "Hello there!",
-      sentBy: "sender",
-      sentAt: "2023-09-20T10:30:00",
-      messageId: 1,
-    },
-    {
-      text: "Hi! How can I help you?",
-      sentBy: "receiver",
-      sentAt: "2023-09-24T02:35:00",
-      messageId: 2,
-    },
-    // Add more messages here
-  ]);
+  const [messages, setMessages] = useState([]);
   function getTimeInIST(date) {
     // Create a new Date object with the same date and time, but set the timezone offset for IST (UTC+5:30)
     const istDate = new Date(date);
     istDate.setMinutes(date.getMinutes() + 330); // 5 hours and 30 minutes ahead
-  
+
     // Get hours and minutes in IST
     const hoursIST = istDate.getUTCHours();
     const minutesIST = istDate.getUTCMinutes();
-  
+
     // Format hours and minutes with leading zeros if needed
-    const formattedHours = hoursIST.toString().padStart(2, '0');
-    const formattedMinutes = minutesIST.toString().padStart(2, '0');
-  
+    const formattedHours = hoursIST.toString().padStart(2, "0");
+    const formattedMinutes = minutesIST.toString().padStart(2, "0");
+
     // Return the time in IST as a string (HH:MM)
     return `${formattedHours}:${formattedMinutes}`;
   }
-  
-  const addMessage = () => {
+
+  const addMessage = async () => {
     if (messageInput.trim() === "") return;
 
     const newMessage = {
       text: messageInput,
-      sentBy: "sender",
+      sentBy: user,
       sentAt: new Date().toISOString(), // Use the current timestamp
-      messageId: messages.length + 1, // Assign a unique messageId
     };
+    const channelRef = doc(db, "channels", stage);
 
-    setMessages([...messages, newMessage]);
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(channelRef, {
+      messages: [...messages, newMessage],
+    });
     setMessageInput("");
   };
   function formatDate(date) {
@@ -89,7 +85,6 @@ const Message = ({ stage, setStage, user }) => {
       date1.getFullYear() !== date2.getFullYear() ||
       date1.getMonth() !== date2.getMonth() ||
       date1.getDate() !== date2.getDate();
-  
     return isDifferent;
   }
   const getChannelData = (channel) => {
@@ -127,10 +122,27 @@ const Message = ({ stage, setStage, user }) => {
         });
       });
   };
+
   useEffect(() => {
     if (stage) {
       getChannelData(stage);
-      console.log(stage);
+      // Reference the specific channel document by its ID
+      const channelRef = doc(db, "channels", stage);
+
+      // Set up a real-time listener for the specific channel document
+      const unsubscribe = onSnapshot(channelRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          // The document exists, you can access its data using docSnapshot.data()
+          const channelData = docSnapshot.data().messages;
+          setMessages(channelData)
+          // Handle the channel data as needed
+          console.log("Channel Data:", channelData);
+        } else {
+          // The document doesn't exist
+          console.log("Channel does not exist.");
+        }
+      });
+      return () => unsubscribe();
     }
   }, [stage]);
   useEffect(() => {
@@ -140,12 +152,13 @@ const Message = ({ stage, setStage, user }) => {
       getUserData(friend);
     }
   }, [channels, user]);
+
   return (
     <div className="w-full relative">
       <div className="w-full p-3 border-b-[1px] border-b-gray-700 flex">
         <button
           onClick={() => setStage(0)}
-          className="px-2 py-2 rounded-full hover:bg-gray-600 flex justify-center items-center text-gray-200"
+          className="px-3 py-2 rounded-full hover:bg-gray-600 flex justify-center items-center text-gray-200"
         >
           <ArrowBackIcon></ArrowBackIcon>
         </button>
@@ -154,58 +167,83 @@ const Message = ({ stage, setStage, user }) => {
             <img src={userData.photoURL} alt="" className="h-12 rounded-full" />
             <div className="mx-4 text-gray-200 ">
               <h4 className="font-[600] text-[1.2rem]">{userData.name}</h4>
-              {userData.username ? <h5>@{}</h5> : <></>}
+              {userData.username ? <h5>@{userData.username}</h5> : <></>}
             </div>
           </div>
         ) : (
           <></>
         )}
       </div>
-      <div id="messages" className="space-y-4 h-[65vh] p-3">
-        {messages.map((message,idx) => (
-          <div key={message.messageId}>
-            {/* Date Divider */}
-          {
-            idx == 0 || haveDifferentDates(new Date(messages[idx]), new Date(messages[idx -1])) ?
-            <div className="text-center text-gray-500 text-sm">
-            {formatDate(new Date(message.sentAt))}
-          </div>
-          :
-            <></>
-          }
-            {/* Message */}
-            <div
-              className={`flex items-start ${
-                message.sentBy != "sender" ? "" : "justify-end"
-              }`}
-            >
-              <div class="flex gap-2 mb-2">
-                <div
-                  class={`relative px-5 py-3 text-white rounded-lg  ltr:rounded-bl-none rtl:rounded-br-none  ${
-                    message.sentBy != "sender"
-                      ? "bg-violet-500 text-white"
-                      : "text-gray-200 bg-gray-700"
-                  }`}
-                >
-                  <p class="mb-0">{message.text}</p>
-                  <p class="mt-1 mb-0 text-xs text-right text-white/50">
-                    <i class="align-middle ri-time-line"></i>{" "}
-                    <span class="align-middle">{getTimeInIST(new Date(message.sentAt))}</span>
-                  </p>
+      {menu == 0 ? (
+        <div id="messages" className="space-y-4 h-[65vh] overflow-y-auto p-3">
+          {messages.map((message, idx) => (
+            <div key={message.messageId}>
+              {/* Date Divider */}
+              {idx == 0 ||
+              haveDifferentDates(
+                new Date(messages[idx].sentAt),
+                new Date(messages[idx - 1].sentAt)
+              ) ? (
+                <div className="text-center text-gray-500 text-sm">
+                  {formatDate(new Date(message.sentAt))}
+                </div>
+              ) : (
+                <></>
+              )}
+              {/* Message */}
+              <div
+                className={`flex items-start ${
+                  message.sentBy != user ? "" : "justify-end"
+                }`}
+              >
+                <div class="flex gap-2 mb-2">
+                  <div
+                    class={`relative px-5 py-3 text-white rounded-lg max-w-[30vw] ltr:rounded-bl-none rtl:rounded-br-none  ${
+                      message.sentBy != user
+                        ? "bg-violet-500 text-white"
+                        : "text-gray-200 bg-gray-700"
+                    }`}
+                  >
+                    <p class="mb-0" style={{wordWrap:" break-word"}}>{message.text}</p>
+                    <p class="mt-1 mb-0 text-xs text-right text-white/50">
+                      <i class="align-middle ri-time-line"></i>{" "}
+                      <span class="align-middle">
+                        {getTimeInIST(new Date(message.sentAt))}
+                      </span>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <></>
+      )}
       {/* Message Input */}
-      <div className="flex w-full mt-4 border-t-[1px] border-gray-600 p-3">
-      <div class="relative w-full">
-        
-        <input type="search" id="default-search" class="block w-full p-4 pl-10 text-sm text-gray-900  rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Type a message." required/>
-        <button type="submit" class="text-white absolute right-2 bottom-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Send</button>
-    </div>
-      </div>
+      {menu == 0 ? (
+        <div className="flex w-full mt-4 border-t-[1px] border-gray-600 p-3">
+          <div class="relative w-full">
+            <input
+              type="text"
+              value={messageInput}
+              onChange={(e) => setMessageInput(e.target.value)}
+              id="default-search"
+              class="block w-full p-4 pl-10 text-sm text-gray-900  rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Type a message."
+              required
+            />
+            <button
+              onClick={addMessage}
+              class="text-white absolute right-2 bottom-2 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Send
+            </button>
+          </div>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

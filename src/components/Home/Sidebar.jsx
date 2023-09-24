@@ -22,7 +22,7 @@ const Sidebar = ({menu,setMenu}) => {
     
         <!-- Start side-menu nav -->
         <!-- Tabs --> */}
-        <div className="w-[100vw] mx-auto lg:my-auto">
+        <div className="w-[100vw] mx-auto lg:my-auto bg-gray-800">
             <ul id="tabs" className="w-[100vw] flex flex-row justify-center nav-tabs">
                 <li className="flex-grow lg:flex-grow-0">
                     <button id="default-tab" onClick={()=>setMenu(1)}  className="tab-button flex relative items-center justify-center mx-auto h-14 w-14 leading-[14px] hover:bg-zinc-500 dark:text-violet-100/80 group/tab my-2 rounded-lg">
@@ -30,7 +30,7 @@ const Sidebar = ({menu,setMenu}) => {
                             <div className="absolute -bottom-1 left-[40%] w-3 h-3 rotate-45 bg-black"></div>
                             <span className={`relative z-10 p-2 text-xs leading-none text-gray-50 whitespace-no-wrap bg-black rounded shadow-lg`}>Profile</span>
                         </div>
-                        <i className={`text-2xl ri-user-2-line ${menu == 1 ? 'text-violet-600' : 'text-gray-300'}`}></i>
+                        <i className={`text-2xl ri-user-2-line ${menu == 1 ? 'text-violet-500' : 'text-gray-300'}`}></i>
                     </button>
                 </li>
                 <li className="flex-grow lg:flex-grow-0">
@@ -39,7 +39,7 @@ const Sidebar = ({menu,setMenu}) => {
                             <div className="absolute -bottom-1 left-[40%] w-3 h-3 rotate-45 bg-black"></div>
                             <span className="relative z-10 p-2 text-xs leading-none text-white whitespace-no-wrap bg-black rounded shadow-lg">Chats</span>
                         </div>
-                        <i className={`text-2xl ri-message-3-line ${menu == 2 ? 'text-violet-600': 'text-gray-300'}`}></i>
+                        <i className={`text-2xl ri-message-3-line ${menu == 2 ? 'text-violet-500': 'text-gray-300'}`}></i>
                     </button>
                 </li>
                 {/* <li className="flex-grow lg:flex-grow-0">
