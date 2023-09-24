@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { db, rdb } from "../../../firebase";
 import {
@@ -15,6 +15,8 @@ import Profile from "../Profile";
 const Message = ({ stage, setStage, user }) => {
   const [userData, setUserData] = useState(null);
   const [channels, setChannels] = useState(null);
+  const chatContainerRef = useRef(null);
+
   const [menu, setMenu] = useState(0);
   var friend;
   const [messageInput, setMessageInput] = useState("");
@@ -50,6 +52,9 @@ const Message = ({ stage, setStage, user }) => {
     await updateDoc(channelRef, {
       messages: [...messages, newMessage],
     });
+   
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    
     setMessageInput("");
   };
   function formatDate(date) {
@@ -126,13 +131,15 @@ const Message = ({ stage, setStage, user }) => {
       getChannelData(stage);
       // Reference the specific channel document by its ID
       const channelRef = doc(db, "channels", stage);
-
+     
       // Set up a real-time listener for the specific channel document
       const unsubscribe = onSnapshot(channelRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
           // The document exists, you can access its data using docSnapshot.data()
           const channelData = docSnapshot.data().messages;
           setMessages(channelData);
+          document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;          
+
           // Handle the channel data as needed
         } else {
           // The document doesn't exist
@@ -148,7 +155,10 @@ const Message = ({ stage, setStage, user }) => {
       getUserData(friend);
     }
   }, [channels, user]);
+  useEffect(() => {
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;          
 
+  }, [messages]);
   return (
     <div className="w-full relative">
       <div className="w-full p-3 border-b-[1px] border-b-gray-700 flex">
@@ -171,8 +181,11 @@ const Message = ({ stage, setStage, user }) => {
         )}
       </div>
       {menu == 0 ? (
-        <div id="messages" className="space-y-4 h-[65vh] overflow-y-auto p-3">
-          {messages.map((message, idx) => (
+        <div id="messages" ref={chatContainerRef} className="space-y-4 h-[65vh] overflow-y-auto p-3">
+          {messages.map((message, idx) => {
+
+            return(
+
             <div key={message.messageId}>
               {/* Date Divider */}
               {idx == 0 ||
@@ -213,7 +226,7 @@ const Message = ({ stage, setStage, user }) => {
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       ) : (
         <></>
