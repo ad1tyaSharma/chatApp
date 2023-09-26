@@ -74,7 +74,7 @@ const Profile = ({ user, self }) => {
       )}
       <div
         style={{ opacity: openInvitation ? 0.4 : 1 }}
-        className="overflow-y-auto flex relative flex-col justify-around items-center lg:w-[80vw] w-[70vw] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 "
+        className="overflow-y-auto flex overflow-x-hidden relative flex-col justify-around items-center lg:w-[80vw] w-[70vw] p-6 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 "
       >
         <div className="flex justify-between w-full">
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">

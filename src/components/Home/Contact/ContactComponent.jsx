@@ -65,42 +65,48 @@ const ContactComponent = ({
     }
   };
   const startChat = async () => {
+    console.log("clicked");
     const channelsCollection = collection(db, "channels");
-    const q = query(
+    const q1 = query(
       channelsCollection,
       where("members", "array-contains", user)
     );
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot && !querySnapshot.empty) {
-      querySnapshot.forEach((el) => {
-        if (el.data().members.includes(contact)) {
-          setStage(el.id);
+    const q2 = query(
+      channelsCollection,
+      where("members", "array-contains", contact)
+    );
+    
+      const querySnapshot1 = await getDocs(q1);
+      const querySnapshot2 = await getDocs(q2);
+      const idSet = new Set(querySnapshot1.docs.map((item) => item.id));
+      for (const item of querySnapshot2.docs) {
+        if (idSet.has(item.id)) {
+          setStage(item.id);
           setMenu(2);
+          return; // Found an object with the same 'id' property
         }
-      });
-      return;
-    }
-
-    // new chat
-    const id = v4();
-    const collectionRef = doc(db, "channels", id);
-    setDoc(collectionRef, {
-      members: [user, contact],
-      messages: [],
-    })
-      .then(async () => {
-        await updateDoc(doc(db, "users", user), {
-          channels: [...userData.channels, id],
-        });
-        await updateDoc(doc(db, "users", contact), {
-          channels: [...contactData.channels, id],
-        });
-        setStage(id);
-        setMenu(2);
+      }
+    
+      const id = v4();
+      const collectionRef = doc(db, "channels", id);
+      setDoc(collectionRef, {
+        members: [user, contact],
+        messages: [],
       })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-      });
+        .then(async () => {
+          await updateDoc(doc(db, "users", user), {
+            channels: [...userData.channels, id],
+          });
+          await updateDoc(doc(db, "users", contact), {
+            channels: [...contactData.channels, id],
+          });
+          setStage(id);
+          setMenu(2);
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+        });
+    
   };
   useEffect(() => {
     getUserData();
