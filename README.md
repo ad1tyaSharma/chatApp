@@ -5,7 +5,7 @@ A brief description of This is a real-time chat application built with React (Vi
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![App Screenshot]('public/demo.png')
 
 
 ## Demo
