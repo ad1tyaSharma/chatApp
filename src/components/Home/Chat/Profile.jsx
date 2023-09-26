@@ -32,7 +32,7 @@ const Profile = ({ user, setStage, channel }) => {
       className="w-full p-3 flex items-center justify-between hover:bg-slate-700 rounded-lg my-3 cursor-pointer"
     >
       <div className="flex items-center">
-        <img src={userData.photoURL} className="h-12 rounded-full" alt="" />
+        <img src={userData.photoURL} className="h-12 w-12 rounded-full" alt="" />
         <div className="mx-4 text-gray-200 font-[550]">
           <h4>{userData.name}</h4>
         </div>
