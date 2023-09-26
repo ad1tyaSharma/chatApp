@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase";
-import { getDoc, doc } from "firebase/firestore";
+import { getDoc, doc,query,collection,where,getDocs} from "firebase/firestore";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Message from "./Chat/Message";
@@ -11,7 +11,12 @@ const Chat = ({ user, setMenu, setStage, stage }) => {
   const getChannelData = (channel) => {
     getDoc(doc(db, "channels", channel))
       .then((result) => {
-        setChannels([...channels, result.data()]);
+        if(result.data())
+        {
+          console.log("yes",channel);
+          setChannels([...channels, result.data()]);
+        }
+        console.log("not",channel);
       })
       .catch((err) => {
         console.error(err);
@@ -29,6 +34,8 @@ const Chat = ({ user, setMenu, setStage, stage }) => {
     getDoc(doc(db, "users", `${user}`))
       .then((result) => {
         setUserData(result.data());
+        
+        
       })
       .catch((err) => {
         console.error(err);
@@ -42,19 +49,37 @@ const Chat = ({ user, setMenu, setStage, stage }) => {
       });
   };
 
+  const fetchDocumentsByIds = async (channelIds) => {
+    const documents = [];
+  
+    for (const channelId of channelIds) {
+      const channelRef = doc(db, 'channels', channelId); // Replace 'channels' with your collection name
+      const channelSnapshot = await getDoc(channelRef);
+  
+      if (channelSnapshot.exists()) {
+        const channelData = channelSnapshot.data();
+        documents.push(channelData); // Add the retrieved document data to the array
+      }
+    }
+  
+    return documents;
+  };
+  
   useEffect(() => {
     if (user) {
       getUserData();
     }
   }, [user]); //
-  //change
   useEffect(() => {
-    if (userData) {
-      userData.channels.forEach((el, key) => {
-        getChannelData(el);
-      });
+    if(userData && userData.channels)
+    {
+      fetchDocumentsByIds(userData.channels)
+      .then((data) => setChannels(data))
+      .catch((error) => console.error('Error fetching documents:', error));
     }
   }, [userData]);
+  //change
+  
   return (
     <div className="w-[100vw] flex justify-center items-center h-[95vh] ">
       <div className="lg:w-[80vw] w-[70vw] min-h-[80vh] bg-white border  border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
@@ -62,9 +87,9 @@ const Chat = ({ user, setMenu, setStage, stage }) => {
           <div className="p-6">
             <h1 className="text-[1.7rem] font-bold text-gray-200">Messages</h1>
             <div className="my-4 h-[70vh]  w-full overflow-y-auto">
-              {userData &&
-              userData.channels.length > 0 &&
-              channels.length > 0 ? (
+              {
+              userData &&
+              channels.length === userData.channels.length ? (
                 channels.map((el, key) => {
                   return (
                     <Profile
