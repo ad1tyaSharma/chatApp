@@ -11,7 +11,11 @@ A brief description of This is a real-time chat application built with React (Vi
 ## Demo
 
 You can access the live demo of this app [here](https://chat-app-one-kappa.vercel.app/).
-
+Test Users
+- Email : test1@user.com, Password : Pass@123
+- Email : test2@user.com, Password : Pass@123
+- Email : test3@user.com, Password : Pass@123
+- Email : test4@user.com, Password : Pass@123
 
 ## Features
 
